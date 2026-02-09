@@ -1,0 +1,43 @@
+# Documentation (garder uniquement README.md)
+*.md
+!README.md
+
+# Backend - Symfony
+worldcup-backend/.env.local
+worldcup-backend/.env.local.php
+worldcup-backend/.env.*.local
+worldcup-backend/.env.test
+worldcup-backend/.env.dev
+worldcup-backend/config/secrets/prod/prod.decrypt.private.php
+worldcup-backend/public/bundles/
+worldcup-backend/var/
+worldcup-backend/vendor/
+worldcup-backend/phpunit.xml
+worldcup-backend/.phpunit.cache/
+worldcup-backend/.agents/
+worldcup-backend/.claude/
+worldcup-backend/compose.yaml
+worldcup-backend/compose.override.yaml
+worldcup-backend/docs/*.pdf
+
+# Frontend - React/Vite
+worldcup-frontend/node_modules/
+worldcup-frontend/dist/
+worldcup-frontend/dist-ssr/
+worldcup-frontend/*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
