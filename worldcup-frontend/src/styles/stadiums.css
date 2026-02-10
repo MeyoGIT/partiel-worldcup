@@ -1,0 +1,145 @@
+/* ============================================
+   Stadiums Components Styles
+   ============================================ */
+
+/* Stadium Card */
+.stadium-card {
+  position: relative;
+  background: var(--color-primary-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 2px solid transparent;
+  transition: background-color var(--transition-base), border-color var(--transition-base);
+}
+
+.stadium-card:hover {
+  background: transparent;
+  border-color: var(--color-gold);
+}
+
+.stadium-card-image {
+  height: 160px;
+  background: var(--color-primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-grass);
+}
+
+.stadium-card-body {
+  padding: var(--space-lg);
+}
+
+.stadium-card-name {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: var(--color-white);
+  margin-bottom: var(--space-sm);
+}
+
+.stadium-card-location {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--color-gray);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-md);
+}
+
+.stadium-card-capacity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-primary-dark);
+}
+
+.stadium-card-capacity-value {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  color: var(--color-gold);
+}
+
+.stadium-card-capacity-label {
+  font-size: var(--text-sm);
+  color: var(--color-gray);
+}
+
+/* Stadium Country Badge */
+.stadium-country-badge {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-primary);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stadium-country-badge.usa {
+  background: #3c3b6e;
+  color: white;
+}
+
+.stadium-country-badge.canada {
+  background: #ff0000;
+  color: white;
+}
+
+.stadium-country-badge.mexico {
+  background: #006847;
+  color: white;
+}
+
+/* Stadiums Grid */
+.stadiums-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-lg);
+}
+
+/* Country Filter */
+.stadium-filters {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.country-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--color-primary-light);
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  color: var(--color-white);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--transition-base), border-color var(--transition-base), color var(--transition-base);
+}
+
+.country-filter-btn:hover {
+  border-color: var(--color-gold);
+}
+
+.country-filter-btn.active {
+  background: var(--color-gold);
+  color: var(--color-primary);
+}
+
+.country-filter-btn .count {
+  background: rgba(0, 0, 0, 0.2);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+}
+
+@media (max-width: 640px) {
+  .stadium-filters {
+    flex-wrap: wrap;
+  }
+}
