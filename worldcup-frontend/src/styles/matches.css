@@ -1,0 +1,285 @@
+/* ============================================
+   Match Components Styles
+   ============================================ */
+
+/* Match Card */
+.match-card {
+  display: block;
+  background: var(--color-primary-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 2px solid transparent;
+  transition: background-color var(--transition-base), border-color var(--transition-base);
+  text-decoration: none;
+  color: inherit;
+}
+
+.match-card:hover {
+  background: transparent;
+  border-color: var(--color-gold);
+}
+
+.match-card.is-live {
+  border: 1px solid var(--color-live);
+}
+
+.match-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-primary-dark);
+  font-size: var(--text-sm);
+}
+
+.match-card-phase {
+  color: var(--color-gray);
+}
+
+.match-card-body {
+  padding: var(--space-lg);
+}
+
+.match-card-teams {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.match-card-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  flex: 1;
+  text-align: center;
+}
+
+.match-card-team.home {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.match-card-team.away {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.match-card-flag {
+  width: 48px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  transition: transform var(--transition-base);
+}
+
+.match-card:hover .match-card-flag {
+  transform: scale(1.05);
+}
+
+.match-card-team-name {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  letter-spacing: 0.05em;
+  color: var(--color-white);
+}
+
+.match-card-team-code {
+  font-size: var(--text-xs);
+  color: var(--color-gray);
+  letter-spacing: 0.1em;
+}
+
+/* Score Display */
+.match-card-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  min-width: 100px;
+}
+
+.match-card-score-display {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-display);
+  font-size: var(--text-4xl);
+  color: var(--color-white);
+}
+
+.match-card-score-separator {
+  color: var(--color-gold);
+}
+
+.match-card-time {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  color: var(--color-gold);
+}
+
+.match-card-status {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-gray);
+}
+
+.match-card-status.live {
+  color: var(--color-live);
+  font-weight: 600;
+}
+
+.match-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(0, 0, 0, 0.2);
+  font-size: var(--text-sm);
+  color: var(--color-gray);
+}
+
+.match-card-stadium {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+/* Live Score Banner */
+.live-scores-banner {
+  background: var(--color-live);
+  padding: var(--space-md) 0;
+  margin-bottom: var(--space-xl);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.live-scores-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  letter-spacing: 0.2em;
+  margin-bottom: var(--space-md);
+}
+
+.live-scores-list {
+  display: flex;
+  gap: var(--space-lg);
+  overflow-x: auto;
+  padding: 0 var(--space-lg);
+  scrollbar-width: none;
+}
+
+.live-scores-list::-webkit-scrollbar {
+  display: none;
+}
+
+.live-score-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  background: var(--color-primary);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+  min-width: fit-content;
+  text-decoration: none;
+  color: inherit;
+}
+
+.live-score-team {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.live-score-flag {
+  width: 24px;
+  height: 18px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.live-score-name {
+  font-weight: 600;
+}
+
+.live-score-result {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: var(--color-gold);
+  padding: 0 var(--space-sm);
+}
+
+/* Match Filters */
+.match-filters {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  padding: var(--space-md);
+  background: var(--color-primary-light);
+  border-radius: var(--radius-lg);
+}
+
+.match-filters .form-select,
+.match-filters .form-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.match-filters .btn {
+  flex-shrink: 0;
+}
+
+/* Match List Grid */
+.matches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: var(--space-lg);
+}
+
+@media (max-width: 640px) {
+  .matches-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .match-card-teams {
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .match-card-team.home,
+  .match-card-team.away {
+    align-items: center;
+    text-align: center;
+  }
+
+  .match-card-score {
+    order: -1;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    padding: var(--space-md) 0;
+    border-bottom: 1px solid var(--color-primary-dark);
+    margin-bottom: var(--space-md);
+  }
+
+  .match-filters {
+    flex-wrap: wrap;
+  }
+
+  .match-filters .form-select,
+  .match-filters .form-input {
+    flex: 1 1 calc(50% - var(--space-sm));
+    min-width: 140px;
+  }
+
+  .match-filters .btn {
+    flex: 1 1 100%;
+  }
+}
