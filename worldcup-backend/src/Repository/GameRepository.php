@@ -50,8 +50,12 @@ class GameRepository extends ServiceEntityRepository
         }
 
         if ($date !== null) {
-            $qb->andWhere('DATE(g.matchDate) = :date')
-               ->setParameter('date', $date);
+            $dateObj = new \DateTime($date);
+            $nextDay = (clone $dateObj)->modify('+1 day');
+            $qb->andWhere('g.matchDate >= :dateStart')
+               ->andWhere('g.matchDate < :dateEnd')
+               ->setParameter('dateStart', $dateObj)
+               ->setParameter('dateEnd', $nextDay);
         }
 
         $qb->orderBy('g.matchDate', 'ASC')
@@ -87,8 +91,12 @@ class GameRepository extends ServiceEntityRepository
         }
 
         if ($date !== null) {
-            $qb->andWhere('DATE(g.matchDate) = :date')
-               ->setParameter('date', $date);
+            $dateObj = new \DateTime($date);
+            $nextDay = (clone $dateObj)->modify('+1 day');
+            $qb->andWhere('g.matchDate >= :dateStart')
+               ->andWhere('g.matchDate < :dateEnd')
+               ->setParameter('dateStart', $dateObj)
+               ->setParameter('dateEnd', $nextDay);
         }
 
         return (int) $qb->getQuery()->getSingleScalarResult();
