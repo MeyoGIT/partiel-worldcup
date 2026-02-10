@@ -1,0 +1,187 @@
+/* ============================================
+   Standings Table Styles
+   ============================================ */
+
+.standings-container {
+  background: var(--color-primary-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.standings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-grass);
+}
+
+.standings-title {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  letter-spacing: 0.1em;
+}
+
+.standings-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.standings-table th,
+.standings-table td {
+  padding: var(--space-md);
+  text-align: center;
+}
+
+.standings-table th {
+  background: var(--color-primary-dark);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  letter-spacing: 0.1em;
+  color: var(--color-gold);
+  font-weight: 400;
+}
+
+.standings-table th:nth-child(2) {
+  text-align: left;
+}
+
+.standings-table td {
+  border-bottom: 1px solid var(--color-primary-dark);
+  font-size: var(--text-sm);
+}
+
+.standings-table tr:last-child td {
+  border-bottom: none;
+}
+
+.standings-table tr:hover td {
+  background: rgba(255, 215, 0, 0.05);
+}
+
+.standings-position {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  width: 40px;
+}
+
+.standings-position.qualified {
+  color: var(--color-grass);
+}
+
+.standings-position.playoff {
+  color: var(--color-gold);
+}
+
+.standings-team {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  text-align: left;
+}
+
+.standings-team-flag {
+  width: 32px;
+  height: 24px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.standings-team-name {
+  font-weight: 500;
+}
+
+.standings-points {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: var(--color-gold);
+}
+
+.standings-gd {
+  font-weight: 600;
+}
+
+.standings-gd.positive {
+  color: var(--color-grass);
+}
+
+.standings-gd.negative {
+  color: var(--color-live);
+}
+
+/* Group Selector */
+.group-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.group-btn {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  background: var(--color-primary-light);
+  color: var(--color-white);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-base), border-color var(--transition-base), color var(--transition-base);
+  cursor: pointer;
+}
+
+.group-btn:hover {
+  border-color: var(--color-gold);
+}
+
+.group-btn.active {
+  background: var(--color-gold);
+  color: var(--color-primary);
+}
+
+/* Standings Legend */
+.standings-legend {
+  display: flex;
+  gap: var(--space-xl);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-primary-dark);
+  font-size: var(--text-sm);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.legend-dot.qualified {
+  background: var(--color-grass);
+}
+
+.legend-dot.playoff {
+  background: var(--color-gold);
+}
+
+@media (max-width: 768px) {
+  .standings-table th,
+  .standings-table td {
+    padding: var(--space-sm);
+  }
+
+  .standings-table .hide-mobile {
+    display: none;
+  }
+
+  .standings-team-name {
+    font-size: var(--text-sm);
+  }
+}
