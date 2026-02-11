@@ -81,6 +81,7 @@ export const getStandings = (group) => api.get(`/standings/${group}`);
 export const login = (email, password) => api.post('/login', { email, password });
 export const logout = () => api.post('/logout');
 export const getMe = () => api.get('/me');
+export const fetchCsrfToken = () => api.get('/csrf-token');
 
 // Admin
 export const adminGetMatches = (params = {}) => api.get('/admin/matches', { params });

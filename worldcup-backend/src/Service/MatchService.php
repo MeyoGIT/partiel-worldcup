@@ -6,6 +6,15 @@ use App\Entity\Game;
 use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
+/**
+ * Service responsable du cycle de vie des matchs.
+ *
+ * Gère les transitions d'état d'un match :
+ *   scheduled → live → finished
+ *
+ * Appelé par AdminController pour les actions admin
+ * (démarrer, mettre à jour le score, terminer un match).
+ */
 class MatchService
 {
     public function __construct(
@@ -13,16 +22,31 @@ class MatchService
         private EntityManagerInterface $entityManager
     ) {}
 
+    /**
+     * Met à jour le score d'un match en cours.
+     *
+     * Modifie les scores domicile/extérieur et persiste en BDD.
+     * Le match doit être au statut "live" (vérifié par AdminController avant l'appel).
+     */
     public function updateScore(Game $game, int $homeScore, int $awayScore): Game
     {
         $game->setHomeScore($homeScore);
         $game->setAwayScore($awayScore);
 
+        // Flush immédiat : les scores doivent être visibles en temps réel
+        // pour les spectateurs qui consultent /api/matches/live
         $this->entityManager->flush();
 
         return $game;
     }
 
+    /**
+     * Démarre un match programmé.
+     *
+     * Passe le statut de "scheduled" à "live" et initialise les scores à 0-0.
+     * À partir de ce moment, le match apparaît dans /api/matches/live
+     * et le frontend le met en avant avec le polling toutes les 5 secondes.
+     */
     public function startMatch(Game $game): Game
     {
         $game->setStatus(Game::STATUS_LIVE);
@@ -34,6 +58,13 @@ class MatchService
         return $game;
     }
 
+    /**
+     * Termine un match en cours.
+     *
+     * Passe le statut de "live" à "finished" et enregistre le score final.
+     * Le match disparaît de /api/matches/live et ses résultats sont pris
+     * en compte par StandingsService pour le calcul du classement du groupe.
+     */
     public function finishMatch(Game $game, int $homeScore, int $awayScore): Game
     {
         $game->setStatus(Game::STATUS_FINISHED);
@@ -45,37 +76,4 @@ class MatchService
         return $game;
     }
 
-    public function getUpcomingMatches(int $limit = 5): array
-    {
-        return $this->gameRepository->createQueryBuilder('g')
-            ->leftJoin('g.homeTeam', 'ht')
-            ->leftJoin('g.awayTeam', 'at')
-            ->leftJoin('g.stadium', 's')
-            ->leftJoin('g.phase', 'p')
-            ->addSelect('ht', 'at', 's', 'p')
-            ->andWhere('g.status = :status')
-            ->andWhere('g.matchDate > :now')
-            ->setParameter('status', Game::STATUS_SCHEDULED)
-            ->setParameter('now', new \DateTime())
-            ->orderBy('g.matchDate', 'ASC')
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function getRecentResults(int $limit = 5): array
-    {
-        return $this->gameRepository->createQueryBuilder('g')
-            ->leftJoin('g.homeTeam', 'ht')
-            ->leftJoin('g.awayTeam', 'at')
-            ->leftJoin('g.stadium', 's')
-            ->leftJoin('g.phase', 'p')
-            ->addSelect('ht', 'at', 's', 'p')
-            ->andWhere('g.status = :status')
-            ->setParameter('status', Game::STATUS_FINISHED)
-            ->orderBy('g.matchDate', 'DESC')
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult();
-    }
 }

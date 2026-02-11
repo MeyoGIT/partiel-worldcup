@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { getMe, login as apiLogin, logout as apiLogout, setCsrfToken } from '../services/api';
+import { getMe, login as apiLogin, logout as apiLogout, setCsrfToken, fetchCsrfToken } from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -16,6 +16,9 @@ export const AuthProvider = ({ children }) => {
       const response = await getMe();
       if (response.data.authenticated) {
         setUser(response.data.user);
+        // Récupérer le token CSRF (perdu après un refresh de page)
+        const csrfResponse = await fetchCsrfToken();
+        setCsrfToken(csrfResponse.data.csrfToken);
       }
     } catch (error) {
       setUser(null);
