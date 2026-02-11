@@ -25,7 +25,7 @@ class GameController extends AbstractController
         $status = $request->query->get('status');
         $date = $request->query->get('date');
         $page = max(1, (int) $request->query->get('page', 1));
-        $limit = min(50, max(1, (int) $request->query->get('limit', 20)));
+        $limit = min(200, max(1, (int) $request->query->get('limit', 20)));
 
         $games = $this->gameRepository->findByFilters($phase, $group, $status, $date, $page, $limit);
         $total = $this->gameRepository->countByFilters($phase, $group, $status, $date);

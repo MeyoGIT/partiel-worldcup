@@ -23,11 +23,12 @@ class AdminController extends AbstractController
     #[Route('/matches', name: 'api_admin_matches', methods: ['GET'])]
     public function listMatches(Request $request): JsonResponse
     {
+        $status = $request->query->get('status');
         $page = max(1, (int) $request->query->get('page', 1));
-        $limit = min(50, max(1, (int) $request->query->get('limit', 20)));
+        $limit = min(200, max(1, (int) $request->query->get('limit', 20)));
 
-        $games = $this->gameRepository->findByFilters(null, null, null, null, $page, $limit);
-        $total = $this->gameRepository->countByFilters(null, null, null, null);
+        $games = $this->gameRepository->findByFilters(null, null, $status, null, $page, $limit);
+        $total = $this->gameRepository->countByFilters(null, null, $status, null);
 
         return $this->json([
             'data' => array_map(fn($game) => $this->serializeGame($game), $games),

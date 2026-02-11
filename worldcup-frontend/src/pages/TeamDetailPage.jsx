@@ -21,7 +21,7 @@ const TeamDetailPage = () => {
     try {
       const [teamRes, matchesRes] = await Promise.all([
         getTeam(id),
-        getMatches({ limit: 50 }),
+        getMatches({ limit: 200 }),
       ]);
 
       const teamData = teamRes.data.data;
