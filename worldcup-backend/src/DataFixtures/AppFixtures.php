@@ -11,11 +11,13 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class AppFixtures extends Fixture
 {
     public function __construct(
         private UserPasswordHasherInterface $passwordHasher,
+        private ValidatorInterface $validator,
         #[Autowire('%admin_email%')] private string $adminEmail,
         #[Autowire('%admin_password%')] private string $adminPassword
     ) {}
@@ -42,6 +44,17 @@ class AppFixtures extends Fixture
         $admin = new User();
         $admin->setEmail($this->adminEmail);
         $admin->setRoles(['ROLE_ADMIN']);
+        $admin->setPlainPassword($this->adminPassword);
+
+        $errors = $this->validator->validateProperty($admin, 'plainPassword');
+        if (count($errors) > 0) {
+            $messages = [];
+            foreach ($errors as $error) {
+                $messages[] = $error->getMessage();
+            }
+            throw new \RuntimeException('Mot de passe admin invalide : ' . implode(', ', $messages));
+        }
+
         $admin->setPassword($this->passwordHasher->hashPassword($admin, $this->adminPassword));
         $manager->persist($admin);
     }
