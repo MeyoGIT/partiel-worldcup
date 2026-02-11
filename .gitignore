@@ -1,4 +1,4 @@
-# Documentation (garder uniquement README.md)
+# Documentation
 *.md
 !README.md
 
