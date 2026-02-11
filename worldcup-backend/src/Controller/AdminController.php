@@ -11,6 +11,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+/**
+ * Controller admin pour la gestion des matchs en direct.
+ *
+ * Protégé par 3 couches de sécurité :
+ * 1. Firewall Symfony → l'utilisateur doit être authentifié (session)
+ * 2. #[IsGranted('ROLE_ADMIN')] → l'utilisateur doit avoir le rôle admin
+ * 3. CsrfTokenListener → les requêtes POST/PATCH doivent contenir un token CSRF valide
+ *
+ * Gère le cycle de vie d'un match : scheduled → live → finished
+ */
 #[Route('/api/admin')]
 #[IsGranted('ROLE_ADMIN')]
 class AdminController extends AbstractController
@@ -41,6 +51,12 @@ class AdminController extends AbstractController
         ]);
     }
 
+    /**
+     * Démarre un match programmé (scheduled → live).
+     *
+     * Initialise les scores à 0-0. Le match apparaît ensuite
+     * dans /api/matches/live pour les spectateurs.
+     */
     #[Route('/matches/{id}/start', name: 'api_admin_match_start', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function startMatch(int $id): JsonResponse
     {
@@ -66,15 +82,29 @@ class AdminController extends AbstractController
         ]);
     }
 
+    /**
+     * Met à jour le score d'un match en cours.
+     *
+     * Méthode PATCH (modification partielle) : on ne modifie que le score,
+     * pas les autres champs du match.
+     *
+     * Validation en cascade :
+     * 1. Le match existe ? (sinon 404)
+     * 2. Le match est en cours ? (sinon 400)
+     * 3. Les scores sont fournis ? (sinon 400)
+     * 4. Les scores sont positifs ? (sinon 400)
+     */
     #[Route('/matches/{id}/score', name: 'api_admin_match_score', methods: ['PATCH'], requirements: ['id' => '\d+'])]
     public function updateScore(int $id, Request $request): JsonResponse
     {
         $game = $this->gameRepository->find($id);
 
+        // Vérification 1 : le match existe en BDD
         if (!$game) {
             return $this->json(['error' => 'Match non trouvé'], 404);
         }
 
+        // Vérification 2 : le match doit être en cours (status = "live")
         if ($game->getStatus() !== Game::STATUS_LIVE) {
             return $this->json([
                 'error' => 'Seuls les matchs en cours peuvent être modifiés',
@@ -82,8 +112,10 @@ class AdminController extends AbstractController
             ], 400);
         }
 
+        // Décoder le body JSON de la requête
         $data = json_decode($request->getContent(), true);
 
+        // Vérification 3 : les deux scores doivent être présents
         if (!isset($data['homeScore']) || !isset($data['awayScore'])) {
             return $this->json([
                 'error' => 'homeScore et awayScore sont requis'
@@ -93,12 +125,14 @@ class AdminController extends AbstractController
         $homeScore = (int) $data['homeScore'];
         $awayScore = (int) $data['awayScore'];
 
+        // Vérification 4 : les scores ne peuvent pas être négatifs
         if ($homeScore < 0 || $awayScore < 0) {
             return $this->json([
                 'error' => 'Les scores doivent être positifs'
             ], 400);
         }
 
+        // Déléguer la mise à jour au service métier
         $game = $this->matchService->updateScore($game, $homeScore, $awayScore);
 
         return $this->json([
@@ -108,6 +142,13 @@ class AdminController extends AbstractController
         ]);
     }
 
+    /**
+     * Termine un match en cours (live → finished).
+     *
+     * Le score final peut être passé dans le body, sinon le score
+     * actuel est conservé. Une fois terminé, le match est pris en compte
+     * par StandingsService pour le calcul du classement du groupe.
+     */
     #[Route('/matches/{id}/finish', name: 'api_admin_match_finish', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function finishMatch(int $id, Request $request): JsonResponse
     {
