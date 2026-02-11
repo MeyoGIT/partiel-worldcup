@@ -10,6 +10,13 @@ use App\Service\StandingsService;
 use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Tests unitaires pour StandingsService.
+ *
+ * Utilise des stubs pour simuler les repositories sans toucher la BDD.
+ * On crée des équipes et des matchs fictifs, puis on vérifie que
+ * le calcul de classement (points, buts, tri) est correct.
+ */
 class StandingsServiceTest extends TestCase
 {
     private Stub&GameRepository $gameRepository;
@@ -23,6 +30,10 @@ class StandingsServiceTest extends TestCase
         $this->standingsService = new StandingsService($this->gameRepository, $this->teamRepository);
     }
 
+    /**
+     * Crée une équipe fictive pour les tests.
+     * Utilise la réflexion pour forcer l'ID (normalement géré par Doctrine).
+     */
     private function createTeam(int $id, string $name, string $code, string $group): Team
     {
         $team = new Team();
@@ -30,12 +41,16 @@ class StandingsServiceTest extends TestCase
         $team->setCode($code);
         $team->setGroupName($group);
 
+        // Forcer l'ID via réflexion car il est normalement auto-généré par la BDD
         $ref = new \ReflectionProperty(Team::class, 'id');
         $ref->setValue($team, $id);
 
         return $team;
     }
 
+    /**
+     * Crée un match terminé fictif avec un score donné.
+     */
     private function createFinishedGame(Team $home, Team $away, int $homeScore, int $awayScore, string $group): Game
     {
         $game = new Game();
@@ -49,6 +64,10 @@ class StandingsServiceTest extends TestCase
         return $game;
     }
 
+    /**
+     * Teste le classement quand aucun match n'a été joué.
+     * Toutes les stats doivent être à 0 pour les 4 équipes.
+     */
     public function testCalculateStandingsWithNoGames(): void
     {
         $teams = [
@@ -77,6 +96,11 @@ class StandingsServiceTest extends TestCase
         }
     }
 
+    /**
+     * Teste le classement avec une victoire à domicile (France 2-0 Allemagne).
+     * France doit avoir 3 points, 2 buts marqués, +2 de différence.
+     * Allemagne doit avoir 0 points, 2 buts encaissés, -2 de différence.
+     */
     public function testCalculateStandingsWithHomeWin(): void
     {
         $france = $this->createTeam(1, 'France', 'FRA', 'A');
@@ -92,7 +116,7 @@ class StandingsServiceTest extends TestCase
 
         $standings = $this->standingsService->calculateStandings('A');
 
-        // France gagne : 3 points
+        // France gagne : 3 points, 1V 0N 0D, 2 buts marqués, 0 encaissés
         $franceStanding = $this->findStandingByCode($standings, 'FRA');
         $this->assertEquals(3, $franceStanding['points']);
         $this->assertEquals(1, $franceStanding['won']);
@@ -101,7 +125,7 @@ class StandingsServiceTest extends TestCase
         $this->assertEquals(0, $franceStanding['goalsAgainst']);
         $this->assertEquals(2, $franceStanding['goalDifference']);
 
-        // Allemagne perd : 0 points
+        // Allemagne perd : 0 points, 0V 0N 1D, 0 buts marqués, 2 encaissés
         $germanyStanding = $this->findStandingByCode($standings, 'GER');
         $this->assertEquals(0, $germanyStanding['points']);
         $this->assertEquals(0, $germanyStanding['won']);
@@ -111,6 +135,10 @@ class StandingsServiceTest extends TestCase
         $this->assertEquals(-2, $germanyStanding['goalDifference']);
     }
 
+    /**
+     * Teste le classement avec un match nul (France 1-1 Allemagne).
+     * Les deux équipes doivent avoir 1 point chacune.
+     */
     public function testCalculateStandingsWithDraw(): void
     {
         $france = $this->createTeam(1, 'France', 'FRA', 'A');
@@ -126,7 +154,7 @@ class StandingsServiceTest extends TestCase
 
         $standings = $this->standingsService->calculateStandings('A');
 
-        // Les deux équipes ont 1 point
+        // Match nul : 1 point chacun, 0V 1N 0D
         $franceStanding = $this->findStandingByCode($standings, 'FRA');
         $this->assertEquals(1, $franceStanding['points']);
         $this->assertEquals(0, $franceStanding['won']);
@@ -140,6 +168,19 @@ class StandingsServiceTest extends TestCase
         $this->assertEquals(0, $germanyStanding['lost']);
     }
 
+    /**
+     * Teste le tri du classement avec les critères FIFA.
+     *
+     * Scénario : France et Brésil ont 4 points chacun, mais France
+     * a une meilleure différence de buts (+3 vs +1) → France 1ère.
+     *
+     * Résultats simulés :
+     *   France 3-0 Allemagne → France 3pts
+     *   Brésil 1-0 Allemagne → Brésil 3pts
+     *   France 0-0 Brésil    → France 4pts, Brésil 4pts
+     *
+     * Classement attendu : France (4pts, +3) > Brésil (4pts, +1) > Allemagne (0pts)
+     */
     public function testCalculateStandingsSorting(): void
     {
         $france = $this->createTeam(1, 'France', 'FRA', 'A');
@@ -148,11 +189,8 @@ class StandingsServiceTest extends TestCase
 
         $teams = [$france, $germany, $brazil];
         $games = [
-            // France bat Allemagne 3-0 => France 3pts
             $this->createFinishedGame($france, $germany, 3, 0, 'A'),
-            // Brésil bat Allemagne 1-0 => Brésil 3pts
             $this->createFinishedGame($brazil, $germany, 1, 0, 'A'),
-            // France et Brésil font match nul 0-0 => France 4pts, Brésil 4pts
             $this->createFinishedGame($france, $brazil, 0, 0, 'A'),
         ];
 
@@ -161,23 +199,25 @@ class StandingsServiceTest extends TestCase
 
         $standings = $this->standingsService->calculateStandings('A');
 
-        // France : 4pts, GD=+3, GF=3
-        // Brésil : 4pts, GD=+1, GF=1
-        // Allemagne : 0pts, GD=-4, GF=0
-        // Tri : points DESC, puis GD DESC, puis GF DESC
+        // 1er : France (4pts, diff +3, 3 buts marqués)
         $this->assertEquals(1, $standings[0]['position']);
         $this->assertEquals('FRA', $standings[0]['team']['code']);
         $this->assertEquals(4, $standings[0]['points']);
 
+        // 2e : Brésil (4pts, diff +1, 1 but marqué)
         $this->assertEquals(2, $standings[1]['position']);
         $this->assertEquals('BRA', $standings[1]['team']['code']);
         $this->assertEquals(4, $standings[1]['points']);
 
+        // 3e : Allemagne (0pts)
         $this->assertEquals(3, $standings[2]['position']);
         $this->assertEquals('GER', $standings[2]['team']['code']);
         $this->assertEquals(0, $standings[2]['points']);
     }
 
+    /**
+     * Helper : retrouve une équipe dans le classement par son code FIFA.
+     */
     private function findStandingByCode(array $standings, string $code): array
     {
         foreach ($standings as $standing) {

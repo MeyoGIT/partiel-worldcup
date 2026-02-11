@@ -93,6 +93,30 @@ Les identifiants admin sont configurés dans le fichier `.env.local` du backend 
 | PATCH | `/api/admin/matches/{id}/score` | Modifier le score |
 | POST | `/api/admin/matches/{id}/finish` | Terminer un match |
 
+## Tests
+
+Le projet contient deux types de tests :
+
+- **Tests unitaires** (`tests/Service/`) : testent la logique métier en isolation avec des mocks/stubs, sans base de données
+- **Tests d'intégration** (`tests/Controller/`) : testent les endpoints API de bout en bout avec une vraie base de données de test
+
+### Préparer la base de données de test
+
+```bash
+cd worldcup-backend
+php bin/console doctrine:database:create --env=test
+php bin/console doctrine:migrations:migrate --env=test --no-interaction
+php bin/console doctrine:fixtures:load --env=test --no-interaction
+```
+
+### Lancer les tests
+
+```bash
+php bin/phpunit                                    # Tous les tests
+php bin/phpunit tests/Service/MatchServiceTest.php  # Un fichier spécifique
+php bin/phpunit --filter testUpdateScore            # Un seul test
+```
+
 ## Structure du projet
 
 ```
