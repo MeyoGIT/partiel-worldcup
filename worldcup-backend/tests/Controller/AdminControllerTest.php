@@ -21,7 +21,7 @@ class AdminControllerTest extends WebTestCase
         );
     }
 
-    private function loginAdmin($client): void
+    private function loginAdmin($client): string
     {
         $client->request('POST', '/api/login', [], [], [
             'CONTENT_TYPE' => 'application/json',
@@ -29,6 +29,19 @@ class AdminControllerTest extends WebTestCase
             'email' => $_ENV['ADMIN_EMAIL'],
             'password' => $_ENV['ADMIN_PASSWORD'],
         ]));
+
+        $data = json_decode($client->getResponse()->getContent(), true);
+
+        return $data['csrfToken'];
+    }
+
+    private function adminRequest($client, string $csrfToken, string $method, string $uri, array $body = null): void
+    {
+        $headers = ['HTTP_X_CSRF_TOKEN' => $csrfToken];
+        if ($body !== null) {
+            $headers['CONTENT_TYPE'] = 'application/json';
+        }
+        $client->request($method, $uri, [], [], $headers, $body !== null ? json_encode($body) : null);
     }
 
     private function findScheduledGameId(): ?int
@@ -44,14 +57,14 @@ class AdminControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $this->loginAdmin($client);
+        $csrfToken = $this->loginAdmin($client);
 
         $gameId = $this->findScheduledGameId();
         if ($gameId === null) {
             $this->markTestSkipped('Aucun match programmé trouvé dans la BDD de test');
         }
 
-        $client->request('POST', "/api/admin/matches/$gameId/start");
+        $this->adminRequest($client, $csrfToken, 'POST', "/api/admin/matches/$gameId/start");
 
         $this->assertResponseIsSuccessful();
 
@@ -66,7 +79,7 @@ class AdminControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $this->loginAdmin($client);
+        $csrfToken = $this->loginAdmin($client);
 
         // D'abord démarrer un match pour avoir un match LIVE
         $gameId = $this->findScheduledGameId();
@@ -74,12 +87,10 @@ class AdminControllerTest extends WebTestCase
             $this->markTestSkipped('Aucun match programmé trouvé dans la BDD de test');
         }
 
-        $client->request('POST', "/api/admin/matches/$gameId/start");
+        $this->adminRequest($client, $csrfToken, 'POST', "/api/admin/matches/$gameId/start");
 
         // Tenter de mettre à jour le score sans données
-        $client->request('PATCH', "/api/admin/matches/$gameId/score", [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ], json_encode([]));
+        $this->adminRequest($client, $csrfToken, 'PATCH', "/api/admin/matches/$gameId/score", []);
 
         $this->assertResponseStatusCodeSame(400);
 
@@ -91,7 +102,7 @@ class AdminControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $this->loginAdmin($client);
+        $csrfToken = $this->loginAdmin($client);
 
         // D'abord démarrer un match pour avoir un match LIVE
         $gameId = $this->findScheduledGameId();
@@ -99,16 +110,14 @@ class AdminControllerTest extends WebTestCase
             $this->markTestSkipped('Aucun match programmé trouvé dans la BDD de test');
         }
 
-        $client->request('POST', "/api/admin/matches/$gameId/start");
+        $this->adminRequest($client, $csrfToken, 'POST', "/api/admin/matches/$gameId/start");
         $this->assertResponseIsSuccessful();
 
         // Terminer le match avec un score final
-        $client->request('POST', "/api/admin/matches/$gameId/finish", [], [], [
-            'CONTENT_TYPE' => 'application/json',
-        ], json_encode([
+        $this->adminRequest($client, $csrfToken, 'POST', "/api/admin/matches/$gameId/finish", [
             'homeScore' => 2,
             'awayScore' => 1,
-        ]));
+        ]);
 
         $this->assertResponseIsSuccessful();
 

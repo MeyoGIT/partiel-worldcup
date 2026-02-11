@@ -10,6 +10,21 @@ const api = axios.create({
   withCredentials: true,
 });
 
+// CSRF token storage
+let csrfToken = null;
+
+export const setCsrfToken = (token) => {
+  csrfToken = token;
+};
+
+// Request interceptor: attach CSRF token on mutating requests
+api.interceptors.request.use((config) => {
+  if (csrfToken && ['post', 'patch', 'put', 'delete'].includes(config.method)) {
+    config.headers['X-CSRF-Token'] = csrfToken;
+  }
+  return config;
+});
+
 // Response interceptor for error handling
 api.interceptors.response.use(
   (response) => response,

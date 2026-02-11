@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use App\Entity\User;
 
@@ -37,6 +38,16 @@ class SecurityController extends AbstractController
     {
         // This method is intercepted by the logout key on the firewall
         throw new \LogicException('This method should never be reached.');
+    }
+
+    #[Route('/api/csrf-token', name: 'api_csrf_token', methods: ['GET'])]
+    public function csrfToken(CsrfTokenManagerInterface $csrfTokenManager): JsonResponse
+    {
+        $token = $csrfTokenManager->getToken('admin');
+
+        return new JsonResponse([
+            'csrfToken' => $token->getValue(),
+        ]);
     }
 
     #[Route('/api/me', name: 'api_me', methods: ['GET'])]

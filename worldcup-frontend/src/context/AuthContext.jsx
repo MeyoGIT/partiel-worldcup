@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { getMe, login as apiLogin, logout as apiLogout } from '../services/api';
+import { getMe, login as apiLogin, logout as apiLogout, setCsrfToken } from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -28,6 +28,9 @@ export const AuthProvider = ({ children }) => {
     const response = await apiLogin(email, password);
     if (response.data.success) {
       setUser(response.data.user);
+      if (response.data.csrfToken) {
+        setCsrfToken(response.data.csrfToken);
+      }
       return true;
     }
     return false;
@@ -39,6 +42,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       // Ignore logout errors
     }
+    setCsrfToken(null);
     setUser(null);
   };
 
