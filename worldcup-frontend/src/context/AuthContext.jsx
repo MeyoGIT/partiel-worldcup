@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
         const csrfResponse = await fetchCsrfToken();
         setCsrfToken(csrfResponse.data.csrfToken);
       }
-    } catch (error) {
+    } catch (_error) {
       setUser(null);
     } finally {
       setLoading(false);
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await apiLogout();
-    } catch (error) {
+    } catch (_error) {
       // Ignore logout errors
     }
     setCsrfToken(null);
@@ -60,6 +60,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

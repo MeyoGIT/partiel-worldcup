@@ -26,6 +26,7 @@ export const useApi = (apiFunction, params = null, immediate = true) => {
     if (immediate) {
       execute();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { data, loading, error, execute, setData };
