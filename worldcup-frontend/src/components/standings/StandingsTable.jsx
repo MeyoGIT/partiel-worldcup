@@ -19,7 +19,7 @@ const StandingsTable = ({ group }) => {
     try {
       const response = await getStandings(group);
       setStandings(response.data.data);
-    } catch (err) {
+    } catch (_err) {
       setError('Erreur lors du chargement du classement');
     } finally {
       setLoading(false);

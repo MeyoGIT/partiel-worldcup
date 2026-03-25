@@ -32,7 +32,7 @@ const TeamDetailPage = () => {
           match.homeTeam.id === parseInt(id) || match.awayTeam.id === parseInt(id)
       );
       setMatches(teamMatches);
-    } catch (err) {
+    } catch (_err) {
       setError('Équipe non trouvée');
     } finally {
       setLoading(false);
