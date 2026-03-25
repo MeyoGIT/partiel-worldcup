@@ -112,6 +112,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set owner lowercase
+        run: echo "OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -120,7 +123,7 @@ jobs:
         with:
           context: ./worldcup-backend
           push: false
-          tags: ghcr.io/${{ github.repository_owner }}/worldcup-backend:latest
+          tags: ghcr.io/${{ env.OWNER }}/worldcup-backend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -129,7 +132,7 @@ jobs:
         with:
           context: ./worldcup-frontend
           push: false
-          tags: ghcr.io/${{ github.repository_owner }}/worldcup-frontend:latest
+          tags: ghcr.io/${{ env.OWNER }}/worldcup-frontend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -145,6 +148,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set owner lowercase
+        run: echo "OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -162,8 +168,8 @@ jobs:
           context: ./worldcup-backend
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/worldcup-backend:latest
-            ghcr.io/${{ github.repository_owner }}/worldcup-backend:${{ github.sha }}
+            ghcr.io/${{ env.OWNER }}/worldcup-backend:latest
+            ghcr.io/${{ env.OWNER }}/worldcup-backend:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -173,7 +179,7 @@ jobs:
           context: ./worldcup-frontend
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/worldcup-frontend:latest
-            ghcr.io/${{ github.repository_owner }}/worldcup-frontend:${{ github.sha }}
+            ghcr.io/${{ env.OWNER }}/worldcup-frontend:latest
+            ghcr.io/${{ env.OWNER }}/worldcup-frontend:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
