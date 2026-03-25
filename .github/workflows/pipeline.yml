@@ -58,9 +58,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: worldcup2026_test
-          MYSQL_USER: worldcup_user
-          MYSQL_PASSWORD: Wc2026_Secure!Pass
+          MYSQL_DATABASE: worldcup2026
         ports:
           - 3306:3306
         options: >-
@@ -88,7 +86,7 @@ jobs:
         working-directory: worldcup-backend
         env:
           APP_ENV: test
-          DATABASE_URL: "mysql://worldcup_user:Wc2026_Secure!Pass@127.0.0.1:3306/worldcup2026_test?serverVersion=8.0.32&charset=utf8mb4"
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/worldcup2026?serverVersion=8.0.32&charset=utf8mb4"
         run: |
           php bin/console doctrine:database:create --env=test --if-not-exists
           php bin/console doctrine:migrations:migrate --env=test --no-interaction
@@ -99,7 +97,7 @@ jobs:
         env:
           APP_ENV: test
           APP_SECRET: ${{ secrets.APP_SECRET }}
-          DATABASE_URL: "mysql://worldcup_user:Wc2026_Secure!Pass@127.0.0.1:3306/worldcup2026_test?serverVersion=8.0.32&charset=utf8mb4"
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/worldcup2026?serverVersion=8.0.32&charset=utf8mb4"
         run: php bin/phpunit --testdox
 
   # ─────────────────────────────────────────
