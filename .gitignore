@@ -26,6 +26,10 @@ worldcup-frontend/dist/
 worldcup-frontend/dist-ssr/
 worldcup-frontend/*.local
 
+# Coverage
+coverage/
+worldcup-backend/.phpunit.cache/
+
 # Logs
 *.log
 npm-debug.log*

@@ -21,7 +21,7 @@ const MatchDetailPage = () => {
     try {
       const response = await getMatch(id);
       setMatch(response.data.data);
-    } catch (err) {
+    } catch {
       setError('Match non trouvé');
     } finally {
       setLoading(false);
