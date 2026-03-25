@@ -1,7 +1,7 @@
 # ─────────────────────────────────────────
 # Stage 1 : builder — install dependencies
 # ─────────────────────────────────────────
-FROM php:8.2-fpm-alpine AS builder
+FROM php:8.4-fpm-alpine AS builder
 
 RUN apk add --no-cache \
     icu-dev \
@@ -22,7 +22,7 @@ RUN composer dump-autoload --optimize --no-dev \
 # ─────────────────────────────────────────
 # Stage 2 : production
 # ─────────────────────────────────────────
-FROM php:8.2-fpm-alpine AS production
+FROM php:8.4-fpm-alpine AS production
 
 RUN apk add --no-cache \
     icu-dev \
