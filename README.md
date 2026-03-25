@@ -1,5 +1,7 @@
 # WorldCup 2026
 
+[![CI Pipeline](https://github.com/MeyoGIT/partiel-worldcup/actions/workflows/pipeline.yml/badge.svg)](https://github.com/MeyoGIT/partiel-worldcup/actions/workflows/pipeline.yml)
+
 Application web de suivi de la Coupe du Monde de Football 2026 (USA / Canada / Mexique).
 
 ## Fonctionnalités
