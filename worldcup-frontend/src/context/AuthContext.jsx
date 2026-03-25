@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
         const csrfResponse = await fetchCsrfToken();
         setCsrfToken(csrfResponse.data.csrfToken);
       }
-    } catch (_error) {
+    } catch {
       setUser(null);
     } finally {
       setLoading(false);
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await apiLogout();
-    } catch (_error) {
+    } catch {
       // Ignore logout errors
     }
     setCsrfToken(null);

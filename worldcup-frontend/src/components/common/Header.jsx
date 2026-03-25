@@ -15,7 +15,7 @@ const Header = () => {
       try {
         const response = await getLiveMatches();
         setHasLiveMatches(response.data?.data?.length > 0);
-      } catch (_error) {
+      } catch {
         // Ignore errors
       }
     };
